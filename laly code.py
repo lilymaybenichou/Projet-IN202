@@ -50,7 +50,6 @@ def YCbCr(mat):
             Cb = -0.1687 * mat[i, j, 0] - 0.3313 * mat[i, j, 1] + 0.5 * mat[i, j, 2] + 128
             Cr = 0.5 * mat[i, j, 0] - 0.4187 * mat[i, j, 1] - 0.0813 * mat[i, j, 2] + 128
             MatYCbCr[i, j] = [R, Cb, Cr]
-    print(MatYCbCr[0, 0])
     return MatYCbCr
 
 def RGB2(mat):
@@ -63,16 +62,41 @@ def RGB2(mat):
             MatRGB[i, j] = (np.uint8(np.clip(R, 0.0, 255.0)), np.uint8(np.clip(G, 0.0, 255.0)), np.uint8(np.clip(B, 0.0, 255.0)))
     return MatRGB
 
+def add_padding(image, pad_size):
+    if isinstance(pad_size, int):
+        pad_size = (pad_size, pad_size)  # Si un seul entier est donné, le même padding sera ajouté dans les deux dimensions
+
+    padded_image = np.pad(image, ((pad_size[0], pad_size[0]), (pad_size[1], pad_size[1]), (0, 0)), mode='constant')
+
+    return padded_image
+
+
+def remove_padding(padded_image, pad_size):
+    if isinstance(pad_size, int):
+        pad_size = (pad_size, pad_size)  # Si un seul entier est donné, le même padding sera éliminé dans les deux dimensions
+
+    image = padded_image[pad_size[0]:-pad_size[0], pad_size[1]:-pad_size[1], :]
+
+    return image
+
+# Charger l'image
+image = load("test.png")
+
+# Ajouter le padding
+pad_size = 10
+padded_image = add_padding(image, pad_size)
+
+padded_yCbCr = YCbCr(padded_image)
+restored_yCbCr = remove_padding(padded_yCbCr, pad_size)
+
+padded_RGB = RGB2(padded_image)
+restored_RGB = remove_padding(padded_RGB, pad_size)
+
+
 test = load("test.png")
+# Afficher l'image convertie en YCbCr
+Image.fromarray(restored_yCbCr.astype(np.uint8), 'YCbCr').show()
 
-# Conversion de l'image en YCbCr
-test_yCbCr = YCbCr(test)
+# Afficher l'image convertie en RGB
+Image.fromarray(restored_RGB.astype(np.uint8), 'RGB').show()
 
-# Vérification de la modification de l'image
-print("Image originale :")
-print(test[0, 0])
-print("Image convertie en YCbCr :")
-print(test_yCbCr[0, 0])
-
-test = load("test.png")
-Image.fromarray(test,'YCbCr').show()
