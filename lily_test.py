@@ -49,7 +49,8 @@ def YCbCr(mat):
             R = 0.299 * mat[i, j, 0] + 0.587 * mat[i, j, 1] + 0.114 * mat[i, j, 2]
             Cb = -0.1687 * mat[i, j, 0] - 0.3313 * mat[i, j, 1] + 0.5 * mat[i, j, 2] + 128
             Cr = 0.5 * mat[i, j, 0] - 0.4187 * mat[i, j, 1] - 0.0813 * mat[i, j, 2] + 128
-            MatYCbCr[i, j] = [R, Cb, Cr]
+            MatYCbCr[i, j] = (np.uint8(R), np.uint8(Cb), np.uint8(Cr))
+            
     return MatYCbCr
 
 def RGB2(mat):
@@ -62,11 +63,44 @@ def RGB2(mat):
             MatRGB[i, j] = (np.uint8(np.clip(R, 0.0, 255.0)), np.uint8(np.clip(G, 0.0, 255.0)), np.uint8(np.clip(B, 0.0, 255.0)))
     return MatRGB
 
-def add_padding(image, pad_size):
-    if isinstance(pad_size, int):
-        pad_size = (pad_size, pad_size)  # Si un seul entier est donné, le même padding sera ajouté dans les deux dimensions
+test = load("test.png")
 
-    padded_image = np.pad(image, ((pad_size[0], pad_size[0]), (pad_size[1], pad_size[1]), (0, 0)), mode='constant')
+# Conversion de l'image en YCbCr
+#question1
+#test_yCbCr = YCbCr(test)
+
+#question2
+#test_RGB = RGB2(test_yCbCr)
+
+
+test = load("test.png")
+#Image.fromarray(test,'RGB').show()
+#Image.fromarray(test_yCbCr,'YCbCr').show()
+#Image.fromarray(test_RGB,'RGB').show()
+
+
+#question 3
+def add_padding(image):
+    x=image.shape[1]
+    if image.shape[1]%8!=0:
+        y=x
+        while x%8!=0:
+            x+=1
+        pad_sizeL=x-y   
+        print(pad_sizeL)
+    a=image.shape[0]
+    if a%8!=0: 
+        b=a
+        while a%8!=0:
+            a+=1
+        pad_sizel=a-b 
+        print(pad_sizel)
+    else:
+        return("pas besoin")
+          
+    pad_size = (pad_sizeL, pad_sizel)  # Si un seul entier est donné, le même padding sera ajouté dans les deux dimensions
+
+    padded_image = np.pad(image, ((0, pad_size[1]), (0, pad_size[0]), (0, 0)), mode='constant')
 
     return padded_image
 
@@ -79,52 +113,21 @@ def remove_padding(padded_image, pad_size):
 
     return image
 
-# Fonction Matrice sous-echantillonnee 
-#question 4
-def matrice_sousechantillon(mat):
-    matrice_se = mat[::2, ::2]
-    return matrice_se
-
-#Question 5
-def matrice_2d(matrice):
-    matrice_double = np.repeat(matrice, 2, axis=1)
-    return matrice_double
-
 # Charger l'image
-image = load("test.png")
+image = load("150_210.png")
+
+print(image.shape)
 
 # Ajouter le padding
-pad_size = 10
-padded_image = add_padding(image, pad_size)
+padded_image = add_padding(image)
 
-subsampled_yCbCr = matrice_sousechantillon(YCbCr(padded_image))
+
+Image.fromarray(padded_image,'RGB').show()
+
 padded_yCbCr = YCbCr(padded_image)
-restored_yCbCr = remove_padding(padded_yCbCr, pad_size)
+restored_yCbCr = remove_padding(padded_yCbCr)
 
-subsampled_RGB = matrice_sousechantillon(RGB2(padded_image))
 padded_RGB = RGB2(padded_image)
-restored_RGB = remove_padding(padded_RGB, pad_size)
+restored_RGB = remove_padding(padded_RGB)
 
-
-test = load("test.png")
-# Afficher l'image convertie en YCbCr
-Image.fromarray(restored_yCbCr.astype(np.uint8), 'YCbCr').show()
-
-# Afficher l'image convertie en RGB
-Image.fromarray(restored_RGB.astype(np.uint8), 'RGB').show()
-
-# Charger l'image
-image = Image.open("test.png")
-image_array = np.array(image)
-
-# Sous-échantillonnage
-subsampled_image = image_array[::2, ::2]
-
-# Multiplier par deux la deuxième dimension
-doubled_image = matrice_2d(subsampled_image)
-
-# Afficher les images
-Image.fromarray(image_array).show()
-Image.fromarray(subsampled_image).show()
-Image.fromarray(doubled_image).show()
 
