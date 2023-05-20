@@ -62,5 +62,17 @@ def RGB2 (mat):
      R = mat [i,j,0] + 1.402 *(mat [i,j,2]-128)
      G = mat [i,j,0] - 0.34414 *(mat[i,j,1]-128) - 0.71414*(mat [i,j,2]-128)
      B = mat[i,j,0] + 1.772*(mat [i,j,1] - 128)
-     MatRGB[i,j] = (np.uint8(np.clip (R, 0.0,255.0)),np.uint8(np.clip))
+     MatRGB[i,j] = (np.uint8(np.clip (R, 0.0,255.0)),np.uint8(np.clip(G,0.0,255.0)),np.uint8(np.clip(B,0.0,255.0)))
    return MatRGB 
+
+
+test = load("test.png")
+
+# Conversion de l'image en YCbCr
+test_yCbCr = YCbCr(test)
+
+# Vérification de la modification de l'image
+print("Image originale :")
+print(test[0, 0])
+print("Image convertie en YCbCr :")
+print(test_yCbCr[0, 0])
