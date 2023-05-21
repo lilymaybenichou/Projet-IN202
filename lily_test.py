@@ -540,7 +540,26 @@ def write_im_header_block_encoding(pathTextFile,pathImageFile,mode,encoding):
 #write_im_header_block_encoding("txtFile1RLE.txt","150_210.png","mode 1","RLE")
 #write_im_header_block_encoding("txtFile2RLEtxt","150_210.png","mode 2","RLE")
 
+#question 13
 
+
+def decompress_mode1(blocks, seuil):
+    decompressed_blocks = np.zeros(blocks.shape)
+    for i, block in enumerate(blocks):
+        decompressed_blocks[i] = detransform_frequence(filter_coeff(block, seuil))
+    restored_image = remove_padding(decompressed_blocks, pad_size)
+    return restored_image
+
+# Charger et compresser l’image
+image = load("test.png")
+compressed_blocks = compress_mode1(image, 10)
+
+# Décompresser et restaurer l’image
+restored_image = decompress_mode1(compressed_blocks, 10)
+
+# Afficher l’image restaurée
+restored_image = Image.fromarray(restored_image.astype(np.uint8))
+restored_image.show()
 
 
 #question 14 
@@ -559,13 +578,10 @@ def decompression(fichieSJPG):
         largeur=l[2]
         mode_compression=l[4]
         rle=l[5]
-        
+
     texte.close()
     return l[0]
 
 print(decompression("txtFile1.txt"))
 
 #si sgp reconstituer les 3 liste de blocs(1ligne=1block)
-#
-#
-#
