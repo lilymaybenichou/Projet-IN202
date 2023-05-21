@@ -169,8 +169,6 @@ def get_block(mat):
     Liste_final=np.array(Liste_final)
     return Liste_final
 
-
-
 #Question 7 
 matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
                      [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
@@ -378,76 +376,124 @@ write_im_header_block("txtFile1.txt","test.png","mode 1","RLE")
 write_im_header_block("txtFile2.txt","test.png","mode 2","RLE")
 
 #Question 12 
-def run_length_encoding(block):
-    encoded_block = []
-    current_value = block[0]
-    count = 1
+def run_length_encoding(line):
+    x = np.array(line, dtype=str)
+    line_array = np.char.split(x).tolist()
+   
 
-    for i in range(1, len(block)):
-        if block[i] == current_value:
+    current_value = line_array[0]
+
+    encoded_line_array=[]
+    count = 0
+
+    for i in range(1, len(line_array)):
+        if (line_array[i] == current_value ) and (current_value =="0") :
             count += 1
         else:
-            encoded_block.append((current_value, count))
-            current_value = block[i]
-            count = 1
+            if (current_value!="0"):
+                encoded_line_array.append((current_value))
+            if(count >0) :
+                nbzero = "#"+str(count+1)
+                encoded_line_array.append(nbzero)
+            current_value = line_array[i]
+            count = 0
 
-    encoded_block.append((current_value, count))
+    if(current_value=="0"):
+         if(count >0) :
+                nbzero = "#"+str(count+1)
+                encoded_line_array.append(nbzero)
+    return  ' '.join(encoded_line_array)
 
-    return encoded_block
+line="1322 0 0 0 -11 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+print(line)
+print(run_length_encoding(line))
 
-def write_im_header_block(pathTextFile, pathImageFile, mode, encoding):
-    f = open(pathTextFile, "w")
+def write_im_header_block_encoding(pathTextFile,pathImageFile,mode,encoding):
+    seuil=10
+    f=open(pathTextFile,"w")
     f.write("SJPG\n")
-    image=load(pathImageFile)
-    padded_image=add_padding(image)[0]
+    image = load(pathImageFile)
+
+    padded_image = add_padding(image)[0]
+    padd_size=add_padding(image)[1]
     hauteur=str(padded_image.shape[0])
     largeur=str(padded_image.shape[1])
-    f.write(hauteur + " " + largeur + "\n")
-    f.write(mode + "\n")
-    f.write(encoding + "\n")
+    f.write(hauteur+" "+largeur+"\n")
+    f.write(mode+"\n")
+    f.write(encoding+"\n")
     imageY=Y(padded_image)
     imageCb=Cb(padded_image)
     imageCr=Cr(padded_image)
     listeblockY=get_block(imageY)
     listeblockCb=get_block(imageCb)
     listeblockCr=get_block(imageCr)
-    #TRlisteblockY=transform_frequence(listeblockY)
-    if mode == "mode 0":
-        if encoding == "RLE":
-            listeblockY = run_length_encoding(listeblockY)
-            listeblockCb = run_length_encoding(listeblockCb)
-            listeblockCr = run_length_encoding(listeblockCr)
-        listeblockYTR = transform_frequence(listeblockY)
-        listeblockCbTR = transform_frequence(listeblockCb)
-        listeblockCrTR = transform_frequence(listeblockCr)
+    
+    TRlisteblockY=transform_frequence(listeblockY)
+    
+    if mode=="mode 0":
+        listeblockY=transform_frequence(listeblockY)
+        listeblockCb=transform_frequence(listeblockCb)
+        listeblockCr=transform_frequence(listeblockCr)
+    if mode=="mode 1":
+        listeblockY=transform_frequence(listeblockY)
+        listeblockY=filter_coeff(listeblockY,seuil)
+        listeblockCb=transform_frequence(listeblockCb)
+        listeblockCb=filter_coeff(listeblockCb,seuil)
+        listeblockCr=transform_frequence(listeblockCr)
+        listeblockCr=filter_coeff(listeblockCr,seuil)
+    if mode=="mode 2":
+        listeblockY=transform_frequence(listeblockY)
+        listeblockY=filter_coeff(listeblockY,seuil)
 
-        for b in listeblockYTR:
-            line = ""
-            for i in range(8):
-                for j in range(8):
-                    line += str(int(b[i, j]))
-                    if i != 7 or j != 7:
-                        line += " "
-            f.write(line + "\n")
+        imageCb=matrice_sousechantillon2(imageCb)
+        imageCr = matrice_2d(imageCb)
+        listeblockCb=get_block(imageCb)
+        listeblockCb=transform_frequence(listeblockCb)
+        listeblockCb=filter_coeff(listeblockCb,seuil)
+       
+        imageCr=matrice_sousechantillon2(imageCr)
+        imageCr = matrice_2d(imageCr)
+        listeblockCr=get_block(imageCr)
+        listeblockCr=transform_frequence(listeblockCr)
+        listeblockCr=filter_coeff(listeblockCr,seuil)
+        
 
-        for b in listeblockCbTR:
-            line = ""
-            for i in range(8):
-                for j in range(8):
-                    line += str(int(b[i, j]))
-                    if i != 7 or j != 7:
-                        line += " "
-            f.write(line + "\n")
+    for b in listeblockY:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        
 
-        for b in listeblockCrTR:
-            line = ""
-            for i in range(8):
-                for j in range(8):
-                    line += str(int(b[i, j]))
-                    if i != 7 or j != 7:
-                        line += " "
-            f.write(line + "\n")
+        if (encoding=="RLE"):
+            line = run_length_encoding(line)
+        f.write( line +"\n")
 
+    for b in listeblockCb:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        if (encoding=="RLE"):
+            line = run_length_encoding(line)
+        f.write( line +"\n")
+    for b in listeblockCr:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        if (encoding=="RLE"):
+            line = run_length_encoding(line)
+        f.write( line +"\n")
     f.close()
 
-write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
+write_im_header_block_encoding("txtFileRLE.txt","150_210.png","mode 0","RLE")
+write_im_header_block_encoding("txtFile1RLE.txt","150_210.png","mode 1","RLE")
+write_im_header_block_encoding("txtFile2RLEtxt","150_210.png","mode 2","RLE")
+
