@@ -94,7 +94,7 @@ def add_padding(image):
         pad_sizel=a-b 
         print(pad_sizel)
     else:
-        return("pas besoin")
+        return image , (0,0)
           
     pad_size = (pad_sizeL, pad_sizel)  # Si un seul entier est donné, le même padding sera ajouté dans les deux dimensions
 
@@ -127,15 +127,30 @@ image = load("150_210.png")
 #restored_RGB = remove_padding(padded_RGB)
 
 #question4
-def matrice_sousechantillon(mat):
-    matrice_se = mat[::2, ::2]
-    return matrice_se
+def matrice_sousechantillon2(mat):
+   
+    matfinal=[]
+    print(mat.shape[0])
+    print(mat.shape[1])
+    for i in range(0,mat.shape[0]): 
+        listemoy=[]
+        for j in range(0,mat.shape[1],2):
+            moyenne=(mat[i,j]+mat[i,j+1])/2
+            listemoy.append(moyenne)
+        matfinal.append(listemoy)
+    return np.array(matfinal)
+    
+# mat=np.array([[1,2,3,6],[3,5,10,0]])
+# print(matrice_sousechantillon2(mat))
 
-#Question 5
+ #Question 5
 def matrice_2d(matrice):
     matrice_double = np.repeat(matrice, 2, axis=1)
     return matrice_double
 
+mat=np.array([[1,2,3,6],[3,5,10,0]])
+print(matrice_sousechantillon2(mat))
+print(matrice_2d(matrice_sousechantillon2(mat)))
 # Charger l'image
 #image = Image.open("test.png")
 #image_array = np.array(image)
@@ -182,7 +197,7 @@ def transform_frequence(liste_de_bloc):
     for i in liste_de_bloc :
         liste_final.append(dct2(i))
    
-    liste_final=np.array(liste_final)
+    # liste_final=np.array(liste_final)
     return liste_final
 
 
@@ -191,7 +206,7 @@ def detransform_frequence(liste_de_bloc):
     for i in liste_de_bloc :
         liste_final.append(int(idct2(i)))
     
-    liste_final=np.array(liste_final)
+    # liste_final=np.array(liste_final)
     return liste_final
 
 # matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
@@ -317,6 +332,7 @@ def write_im_header(pathTextFile,pathImageFile,mode,encoding):
 
 #question11
 def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
+    seuil=10
     f=open(pathTextFile,"w")
     f.write("SJPG\n")
     image = load(pathImageFile)
@@ -334,11 +350,32 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
     listeblockCr=get_block(imageCr)
     #TRlisteblockY=transform_frequence(listeblockY)
     if mode=="mode 0":
-        listeblockYTR=transform_frequence(listeblockY)
-        listeblockCbTR=transform_frequence(listeblockCb)
-        listeblockCrTR=transform_frequence(listeblockCr)
+        listeblockY=transform_frequence(listeblockY)
+        listeblockCb=transform_frequence(listeblockCb)
+        listeblockCr=transform_frequence(listeblockCr)
+    if mode=="mode 1":
+        listeblockY=transform_frequence(listeblockY)
+        listeblockY=filter_coeff(listeblockY,seuil)
+        listeblockCb=transform_frequence(listeblockCb)
+        listeblockCb=filter_coeff(listeblockCb,seuil)
+        listeblockCr=transform_frequence(listeblockCr)
+        listeblockCr=filter_coeff(listeblockCr,seuil)
+    if mode=="mode 2":
+        listeblockY=transform_frequence(listeblockY)
+        listeblockY=filter_coeff(listeblockY,seuil)
 
-
+        imageCb=matrice_sousechantillon(imageCb)
+        imageCr = matrice_2d(imageCb)
+        listeblockCb=get_block(imageCb)
+        listeblockCb=transform_frequence(listeblockCb)
+        listeblockCb=filter_coeff(listeblockCb,seuil)
+       
+        imageCr=matrice_sousechantillon(imageCr)
+        imageCr = matrice_2d(imageCr)
+        listeblockCr=get_block(imageCr)
+        listeblockCr=transform_frequence(listeblockCr)
+        listeblockCr=filter_coeff(listeblockCr,seuil)
+        
 
     for b in listeblockY:
         line=""
@@ -365,4 +402,9 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
                     line = line + " "
         f.write( line +"\n")
     f.close()
-write_im_header_block("txtFile.txt","150_210.png", 0,"RLE")
+
+
+
+# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
+# write_im_header_block("txtFile1.txt","test.png","mode 1","RLE")
+# write_im_header_block("txtFile2.txt","test.png","mode 2","RLE")
