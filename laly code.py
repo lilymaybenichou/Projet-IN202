@@ -90,6 +90,24 @@ def matrice_2d(matrice):
     matrice_double = np.repeat(matrice, 2, axis=1)
     return matrice_double
 
+#Question 6
+def get_block(mat):
+    indice = 8
+    Liste_final=[]
+    if mat.shape[0]%indice!=0 and mat.shape[1]%indice!=0:
+        return "matrice non divisible par 8"
+    else :
+        for i in range (0,mat.shape[1]-1,indice):
+            for j in range (0,mat.shape[0]-1,indice):
+                Liste_final.append(mat[i:i+indice,j:j+indice])
+    Liste_final=np.array(Liste_final)
+    return Liste_final
+
+
+matrice = np.array([[1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
+print(get_block(matrice))
+
+
 # Charger l'image
 image = load("test.png")
 
