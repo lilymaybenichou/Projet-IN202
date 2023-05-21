@@ -169,8 +169,6 @@ def get_block(mat):
     Liste_final=np.array(Liste_final)
     return Liste_final
 
-
-
 #Question 7 
 matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
                      [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
