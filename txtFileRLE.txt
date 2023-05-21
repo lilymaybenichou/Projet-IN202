@@ -1,4 +1,0 @@
-SJPG
-24 16
-mode 0
-RLE
