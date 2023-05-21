@@ -154,6 +154,15 @@ listdt = transform_frequence(listt)
 print(listdt)
 
 #Question 8 
+def filter_coeff(liste_de_bloc,seuil):
+    liste_final=[]
+    for b in liste_de_bloc :
+        b[(b>0) & (b < seuil)] = 0 
+        b[(b<0) & (b > -seuil)] = 0 
+        liste_final.append(b)
+    
+    return liste_final
+
 def compress_mode0(image):
     yCbCr_image = YCbCr(image)
     padded_image = add_padding(yCbCr_image)
@@ -171,15 +180,158 @@ def compress_mode1(image, seuil):
     return blocks
 
 
-def compress_mode2(image, seuil):
-    yCbCr_image = YCbCr(image)
-    padded_image = add_padding(yCbCr_image)
-    blocks = get_block(padded_image)
-    blocks[np.abs(blocks) < seuil] = 0
-    subsampled_Cb = matrice_sousechantillon(Cb(padded_image))
-    subsampled_Cr = matrice_sousechantillon(Cr(padded_image))
+#Question 9 
+def compress(image,mode,seuil):
+    imagemat = load(image)
+    imageYCbCr=YCbCr(imagemat)
+    listblockY = get_block(imageYCbCr[:,:,0])
+    listblockCb=get_block(imageYCbCr[:,:,1])
+    listblockCr=get_block(imageYCbCr[:,:,2])
+    if mode==0:
+        return (listblockY, listblockCb, listblockCr)
+    if mode==1 :
+        listblockY=filter_coeff(listblockY,seuil)
+        return (listblockY, listblockCb, listblockCr)
+    
+    if mode==2:
+        listblockY=filter_coeff(listblockY,seuil)
+        
+        listblockCb_ech=matrice_sousechantillon(imageYCbCr[:,:,1])
+        listblockCb=filter_coeff(listblockCb_ech,seuil)
 
-    return blocks, subsampled_Cb, subsampled_Cr
+        listblockCr_ech=matrice_sousechantillon(imageYCbCr[:,:,2])
+        listblockCr=filter_coeff(listblockCr_ech,seuil)
+        return (listblockY, listblockCb, listblockCr)    
+
+# imagecompress=compress("test.png",0,10)
+# print(imagecompress)
+# imagecompress=compress("test.png",1,10)
+# print(imagecompress)
+# imagecompress=compress("test.png",2,10)
+# print(imagecompress)
+
+#Question 10
+def write_im_header(pathTextFile,pathImageFile,mode,encoding):
+    f=open(pathTextFile,"w")
+    f.write("SJPG\n")
+    image = load(pathImageFile)
+    hauteur=str(image.shape[0])
+    largeur=str(image.shape[1])
+    f.write(hauteur+" "+largeur+"\n")
+    f.write(mode+"\n")
+    f.write(encoding+"\n")
+    f.close()
+
+# write_im_header("txtFile.txt","150_210.png","mode 0","RLE")
+
+#Question 11
+def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
+    f=open(pathTextFile,"w")
+    f.write("SJPG\n")
+    image = load(pathImageFile)
+    padded_image = add_padding(image)[0]
+    hauteur=str(padded_image.shape[0])
+    largeur=str(padded_image.shape[1])
+    f.write(hauteur+" "+largeur+"\n")
+    f.write(mode+"\n")
+    f.write(encoding+"\n")
+    imageY=Y(padded_image)
+    imageCb=Cb(padded_image)
+    imageCr=Cr(padded_image)
+    listeblockY=get_block(imageY)
+    listeblockCb=get_block(imageCb)
+    listeblockCr=get_block(imageCr)
+    #TRlisteblockY=transform_frequence(listeblockY)
+    if mode=="mode 0":
+        listeblockYTR=transform_frequence(listeblockY)
+        listeblockCbTR=transform_frequence(listeblockCb)
+        listeblockCrTR=transform_frequence(listeblockCr)
+
+
+
+    for b in listeblockY:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        f.write( line +"\n")
+    for b in listeblockCb:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        f.write( line +"\n")
+    for b in listeblockCr:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        f.write( line +"\n")
+    f.close()
+write_im_header_block("txtFile.txt","150_210.png", 0,"RLE")
+
+#Question 12 
+def write_im_header_block(pathTextFile, pathImageFile, mode, encoding):
+    f = open(pathTextFile, "w")
+    f.write("SJPG\n")
+    image=load(pathImageFile)
+    padded_image=add_padding(image)[0]
+    hauteur=str(padded_image.shape[0])
+    largeur=str(padded_image.shape[1])
+    f.write(hauteur + " " + largeur + "\n")
+    f.write(mode + "\n")
+    f.write(encoding + "\n")
+    imageY=Y(padded_image)
+    imageCb=Cb(padded_image)
+    imageCr=Cr(padded_image)
+    listeblockY=get_block(imageY)
+    listeblockCb=get_block(imageCb)
+    listeblockCr=get_block(imageCr)
+    #TRlisteblockY=transform_frequence(listeblockY)
+    if mode == "mode 0":
+        if encoding == "RLE":
+            listeblockY = run_length_encoding(listeblockY)
+            listeblockCb = run_length_encoding(listeblockCb)
+            listeblockCr = run_length_encoding(listeblockCr)
+        listeblockYTR = transform_frequence(listeblockY)
+        listeblockCbTR = transform_frequence(listeblockCb)
+        listeblockCrTR = transform_frequence(listeblockCr)
+
+        for b in listeblockYTR:
+            line = ""
+            for i in range(8):
+                for j in range(8):
+                    line += str(int(b[i, j]))
+                    if i != 7 or j != 7:
+                        line += " "
+            f.write(line + "\n")
+
+        for b in listeblockCbTR:
+            line = ""
+            for i in range(8):
+                for j in range(8):
+                    line += str(int(b[i, j]))
+                    if i != 7 or j != 7:
+                        line += " "
+            f.write(line + "\n")
+
+        for b in listeblockCrTR:
+            line = ""
+            for i in range(8):
+                for j in range(8):
+                    line += str(int(b[i, j]))
+                    if i != 7 or j != 7:
+                        line += " "
+            f.write(line + "\n")
+
+    f.close()
+# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
 
 # Charger l'image
 image = load("test.png")
@@ -225,66 +377,3 @@ compressed_mode1 = compress_mode1(image, seuil)
 # Mode 2 : seuil appliqué aux coefficients + sous-échantillonnage de la chrominance
 seuil = 8
 compressed_mode2, subsampled_Cb, subsampled_Cr = compress_mode2(image, seuil)
-
-#Question 10
-def write_im_header(pathTextFile,pathImageFile,mode,encoding):
-    f=open(pathTextFile,"w")
-    f.write("SJPG\n")
-    image = load(pathImageFile)
-    hauteur=str(image.shape[0])
-    largeur=str(image.shape[1])
-    f.write(hauteur+" "+largeur+"\n")
-    f.write(mode+"\n")
-    f.write(encoding+"\n")
-    f.close()
-
-# write_im_header("txtFile.txt","150_210.png","mode 0","RLE")
-
-#question11
-def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
-    f=open(pathTextFile,"w")
-    f.write("SJPG\n")
-    image = load(pathImageFile)
-    hauteur=str(image.shape[0])
-    largeur=str(image.shape[1])
-    f.write(hauteur+" "+largeur+"\n")
-    f.write(mode+"\n")
-    f.write(encoding+"\n")
-    imageY=Y(image)
-    imageCb=Cb(image)
-    imageCr=Cr(image)
-    listeblockY=get_block(imageY)
-    TRlisteblockY=transform_frequence(listeblockY)
-    for i in TRlisteblockY:
-        f.write(str(i)+" ")
-    
-    f.close()
-# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
-
-
-#Question 12 
-
-def write_im_header_block(pathTextFile, pathImageFile, mode, encoding):
-    f = open(pathTextFile, "w")
-    f.write("SJPG\n")
-    image = load(pathImageFile)
-    hauteur = str(image.shape[0])
-    largeur = str(image.shape[1])
-    f.write(hauteur + " " + largeur + "\n")
-    f.write(mode + "\n")
-    f.write(encoding + "\n")
-    imageY = Y(image)
-    imageCb = Cb(image)
-    imageCr = Cr(image)
-    listeblockY = get_block(imageY)
-    TRlisteblockY = transform_frequence(listeblockY)
-    
-    # Appliquer le codage RLE si l'option "RLE" est spécifiée
-    if encoding == "RLE":
-        TRlisteblockY = run_length_encoding(TRlisteblockY)
-    
-    for i in TRlisteblockY:
-        f.write(str(i) + " ")
-    
-    f.close()
-# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
