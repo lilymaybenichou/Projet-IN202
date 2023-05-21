@@ -155,7 +155,7 @@ def matrice_2d(matrice):
 
 #Question 6
 def get_block(mat):
-    indice = 8
+    indice = 2
     Liste_final=[]
     if mat.shape[0]%indice!=0 and mat.shape[1]%indice!=0:
         return "matrice non divisible par 8"
@@ -167,5 +167,29 @@ def get_block(mat):
     return Liste_final
 
 
+#matrice = np.array([[1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
+#print(get_block(matrice))
+
+#question7
+def transform_frequence(liste_de_bloc):
+    liste_final=[]
+    for i in liste_de_bloc :
+        liste_final.append(dct2(i))
+    liste_final=np.array(liste_final)
+    return liste_final
+
+
+def detransform_frequence(liste_de_bloc):
+    liste_final=[]
+    for i in liste_de_bloc :
+        liste_final.append(idct2(i))
+    liste_final=np.array(liste_final)
+    return liste_final
+
 matrice = np.array([[1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-print(get_block(matrice))
+listb = get_block(matrice)
+print(listb)
+listt = transform_frequence(listb)
+print(listt)
+listdt = transform_frequence(listt)
+print(listdt)
