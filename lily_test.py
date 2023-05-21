@@ -116,18 +116,56 @@ def remove_padding(padded_image, pad_size):
 # Charger l'image
 image = load("150_210.png")
 
-print(image.shape)
+#print(image.shape)
 
 # Ajouter le padding
-padded_image = add_padding(image)
+#padded_image = add_padding(image)
+#Image.fromarray(padded_image,'RGB').show()
+
+#padded_yCbCr = YCbCr(padded_image)
+#restored_yCbCr = remove_padding(padded_yCbCr)
+
+#padded_RGB = RGB2(padded_image)
+#restored_RGB = remove_padding(padded_RGB)
+
+#question4
+def matrice_sousechantillon(mat):
+    matrice_se = mat[::2, ::2]
+    return matrice_se
+
+#Question 5
+def matrice_2d(matrice):
+    matrice_double = np.repeat(matrice, 2, axis=1)
+    return matrice_double
+
+# Charger l'image
+#image = Image.open("test.png")
+#image_array = np.array(image)
+
+# Sous-échantillonnage
+#subsampled_image = image_array[::2, ::2]
+
+# Multiplier par deux la deuxième dimension
+#doubled_image = matrice_2d(subsampled_image)
+
+# Afficher les images
+#Image.fromarray(image_array).show()
+#Image.fromarray(subsampled_image).show()
+#Image.fromarray(doubled_image).show()
+
+#Question 6
+def get_block(mat):
+    indice = 8
+    Liste_final=[]
+    if mat.shape[0]%indice!=0 and mat.shape[1]%indice!=0:
+        return "matrice non divisible par 8"
+    else :
+        for i in range (0,mat.shape[1]-1,indice):
+            for j in range (0,mat.shape[0]-1,indice):
+                Liste_final.append(mat[i:i+indice,j:j+indice])
+    Liste_final=np.array(Liste_final)
+    return Liste_final
 
 
-Image.fromarray(padded_image,'RGB').show()
-
-padded_yCbCr = YCbCr(padded_image)
-restored_yCbCr = remove_padding(padded_yCbCr)
-
-padded_RGB = RGB2(padded_image)
-restored_RGB = remove_padding(padded_RGB)
-
-
+matrice = np.array([[1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
+print(get_block(matrice))
