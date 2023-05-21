@@ -339,6 +339,7 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
     f=open(pathTextFile,"w")
     f.write("SJPG\n")
     image = load(pathImageFile)
+    
     padded_image = add_padding(image)[0]
     hauteur=str(padded_image.shape[0])
     largeur=str(padded_image.shape[1])
