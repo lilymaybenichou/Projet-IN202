@@ -497,3 +497,49 @@ write_im_header_block_encoding("txtFileRLE.txt","150_210.png","mode 0","RLE")
 write_im_header_block_encoding("txtFile1RLE.txt","150_210.png","mode 1","RLE")
 write_im_header_block_encoding("txtFile2RLEtxt","150_210.png","mode 2","RLE")
 
+#Question 13
+def decompress_mode1(blocks, seuil):
+    decompressed_blocks = np.zeros(blocks.shape)
+    for i, block in enumerate(blocks):
+        decompressed_blocks[i] = detransform_frequence(filter_coeff(block, seuil))
+    restored_image = remove_padding(decompressed_blocks, pad_size)
+    return restored_image
+
+#Tests
+
+# Charger et compresser l’image
+#image = load("test.png")
+#compressed_blocks = compress_mode1(image, 10)
+
+# Décompresser et restaurer l’image
+#restored_image = decompress_mode1(compressed_blocks, 10)
+
+# Afficher l’image restaurée
+#restored_image = Image.fromarray(restored_image.astype(np.uint8))
+#restored_image.show()
+
+#Question 14
+def decompression(fichierSJPG):
+    texte = open(fichierSJPG, "r")
+    lignes = texte.readlines()
+    l = ""
+    n = 0
+    while n != 4 and n < len(lignes):  # Récupération des informations de l'image
+        l += lignes[n]
+        n += 1
+        lignes=texte.readline()
+    l = list(l.split())
+    if l[0] == 'SJPG':
+        hauteur = int(l[1])
+        largeur = int(l[2])
+        mode_compression = l[4]
+        rle = l[5]
+        blocs = []
+        for i in range(0, largeur):
+            for j in range(0, hauteur):
+                detransform_frequence("matrice du blockY")# utiliser lahauteur et la largeur pour  retrouver la taille dublock et le repasser en matrice
+    return l[0]
+
+print(decompression("txtFile1.txt"))
+
+#si sgp reconstituer les 3 liste de blocs(1ligne=1block)

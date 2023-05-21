@@ -349,6 +349,33 @@ def write_im_header_block(pathTextFile, pathImageFile, mode, encoding):
     f.close()
 # write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
 
+#question 14 
+def decompression(fichierSJPG):
+    texte = open(fichierSJPG, "r")
+    lignes = texte.readlines()
+    l = ""
+    n = 0
+    while n != 4 and n < len(lignes):  # Récupération des informations de l'image
+        l += lignes[n]
+        n += 1
+        lignes=texte.readline()
+    l = list(l.split())
+    if l[0] == 'SJPG':
+        hauteur = int(l[1])
+        largeur = int(l[2])
+        mode_compression = l[4]
+        rle = l[5]
+        blocs = []
+        for i in range(0, largeur):
+            for j in range(0, hauteur):
+                detransform_frequence("matrice du blockY")# utiliser lahauteur et la largeur pour  retrouver la taille dublock et le repasser en matrice
+    return l[0]
+
+print(decompression("txtFile1.txt"))
+
+
+#si sgp reconstituer les 3 liste de blocs(1ligne=1block)
+
 # Charger l'image
 image = load("test.png")
 
