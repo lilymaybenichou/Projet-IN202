@@ -155,26 +155,37 @@ def matrice_2d(matrice):
 
 #Question 6
 def get_block(mat):
-    indice = 2
+    indice = 8
     Liste_final=[]
     if mat.shape[0]%indice!=0 and mat.shape[1]%indice!=0:
         return "matrice non divisible par 8"
     else :
-        for i in range (0,mat.shape[1]-1,indice):
-            for j in range (0,mat.shape[0]-1,indice):
+        for j in range (0,mat.shape[1]-1,indice):
+            for i in range (0,mat.shape[0]-1,indice):
                 Liste_final.append(mat[i:i+indice,j:j+indice])
-    Liste_final=np.array(Liste_final)
+                
+    #Liste_final=np.array(Liste_final)
     return Liste_final
 
 
-#matrice = np.array([[1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-#print(get_block(matrice))
+# 
 
-#question7
+
+#question7matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0]]
+#                     )
+
 def transform_frequence(liste_de_bloc):
     liste_final=[]
     for i in liste_de_bloc :
         liste_final.append(dct2(i))
+   
     liste_final=np.array(liste_final)
     return liste_final
 
@@ -182,14 +193,110 @@ def transform_frequence(liste_de_bloc):
 def detransform_frequence(liste_de_bloc):
     liste_final=[]
     for i in liste_de_bloc :
-        liste_final.append(idct2(i))
+        liste_final.append(int(idct2(i)))
+    
     liste_final=np.array(liste_final)
     return liste_final
 
-matrice = np.array([[1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]])
-listb = get_block(matrice)
-print(listb)
-listt = transform_frequence(listb)
-print(listt)
-listdt = transform_frequence(listt)
-print(listdt)
+# matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0]]
+#                     )
+# listb = get_block(matrice)
+# print(listb)
+# listt = transform_frequence(listb)
+# print(listt)
+# listdt = detransform_frequence(listt)
+# print(listdt)
+
+#question 8 
+def filter_coeff(liste_de_bloc,seuil):
+    liste_final=[]
+    for b in liste_de_bloc :
+        b[(b>0) & (b < seuil)] = 0 
+        b[(b<0) & (b > -seuil)] = 0 
+        liste_final.append(b)
+    liste_final=np.array(liste_final)
+    return liste_final
+
+matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                    [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                    [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                    [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                    [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                    [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                    [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                    [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0]]
+                    )
+
+# listb = get_block(matrice)
+# print(listb)
+# listt = transform_frequence(listb)
+# print(listt)
+# listtcoeff= filter_coeff(listt,10)
+# print(listtcoeff)
+
+
+#question 9 
+
+def compress(image,mode,seuil):
+    imagemat = load(image)
+    imageYCbCr=YCbCr(imagemat)
+    listblockY = get_block(imageYCbCr[::0])
+    listblockCb=get_block(imageYCbCr[::1])
+    listblockCr=get_block(imageYCbCr[::2])
+    if mode==0:
+        return (listblockY, listblockCb, listblockCr)
+    if mode==1 :
+        listblockY=filter_coeff(listblockY,seuil)
+        return (listblockY, listblockCb, listblockCr)
+    if mode==2:
+        listblockY=filter_coeff(listblockY,seuil)
+        listblockCb=filter_coeff(listblockCb,seuil)
+        listblockCr=filter_coeff(listblockCr,seuil)
+        return (listblockY, listblockCb, listblockCr)    
+
+imagecompress=compress("test.png",0,10)
+print(imagecompress)
+
+#question 10
+
+def write_im_header(pathTextFile,pathImageFile,mode,encoding):
+    f=open(pathTextFile,"w")
+    f.write("SJPG\n")
+    image = load(pathImageFile)
+    hauteur=str(image.shape[0])
+    largeur=str(image.shape[1])
+    f.write(hauteur+" "+largeur+"\n")
+    f.write(mode+"\n")
+    f.write(encoding+"\n")
+    f.close()
+
+
+# write_im_header("txtFile.txt","150_210.png","mode 0","RLE")
+
+#question11
+def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
+    f=open(pathTextFile,"w")
+    f.write("SJPG\n")
+    image = load(pathImageFile)
+    hauteur=str(image.shape[0])
+    largeur=str(image.shape[1])
+    f.write(hauteur+" "+largeur+"\n")
+    f.write(mode+"\n")
+    f.write(encoding+"\n")
+    imageY=Y(image)
+    imageCb=Cb(image)
+    imageCr=Cr(image)
+    listeblockY=get_block(imageY)
+    TRlisteblockY=transform_frequence(listeblockY)
+    for i in TRlisteblockY:
+        f.write(str(i)+" ")
+    
+    f.close()
+# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
