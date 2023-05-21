@@ -536,22 +536,35 @@ def write_im_header_block_encoding(pathTextFile,pathImageFile,mode,encoding):
 
 
 
-write_im_header_block_encoding("txtFileRLE.txt","150_210.png","mode 0","RLE")
-write_im_header_block_encoding("txtFile1RLE.txt","150_210.png","mode 1","RLE")
-write_im_header_block_encoding("txtFile2RLEtxt","150_210.png","mode 2","RLE")
+#write_im_header_block_encoding("txtFileRLE.txt","150_210.png","mode 0","RLE")
+#write_im_header_block_encoding("txtFile1RLE.txt","150_210.png","mode 1","RLE")
+#write_im_header_block_encoding("txtFile2RLEtxt","150_210.png","mode 2","RLE")
 
 
 
 
 #question 14 
-#def f(fhichierprof):
-    #li 4 prem ligne SJPG
-# 210 300
-# mode 0
-# RLE
-# verifier qu'il ya buien sjgp 
-#recup taille largeur
-#recup mode de compression +rle ou non
+def decompression(fichieSJPG):
+    texte=open(fichieSJPG,"r")
+    lignes=texte.readline()
+    l=""
+    n=0
+    while n!=4:# recuperation des information de l'image
+        l+=lignes
+        n+=1
+        lignes=texte.readline()
+    l=list(l.split())
+    if l[0]=='SJPG':
+        hauteur=l[1]
+        largeur=l[2]
+        mode_compression=l[4]
+        rle=l[5]
+        
+    texte.close()
+    return l[0]
+
+print(decompression("txtFile1.txt"))
+
 #si sgp reconstituer les 3 liste de blocs(1ligne=1block)
 #
 #
