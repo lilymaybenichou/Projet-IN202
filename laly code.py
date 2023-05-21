@@ -119,6 +119,16 @@ matrice = np.array([[1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0
 print(get_block(matrice))
 
 #question7
+#question7matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0]]
+#                     )
+
 def transform_frequence(liste_de_bloc):
     liste_final=[]
     for i in liste_de_bloc :
@@ -130,7 +140,8 @@ def transform_frequence(liste_de_bloc):
 def detransform_frequence(liste_de_bloc):
     liste_final=[]
     for i in liste_de_bloc :
-        liste_final.append(idct2(i))
+        liste_final.append(int(idct2(i)))
+    
     liste_final=np.array(liste_final)
     return liste_final
 
@@ -215,3 +226,65 @@ compressed_mode1 = compress_mode1(image, seuil)
 seuil = 8
 compressed_mode2, subsampled_Cb, subsampled_Cr = compress_mode2(image, seuil)
 
+#Question 10
+def write_im_header(pathTextFile,pathImageFile,mode,encoding):
+    f=open(pathTextFile,"w")
+    f.write("SJPG\n")
+    image = load(pathImageFile)
+    hauteur=str(image.shape[0])
+    largeur=str(image.shape[1])
+    f.write(hauteur+" "+largeur+"\n")
+    f.write(mode+"\n")
+    f.write(encoding+"\n")
+    f.close()
+
+# write_im_header("txtFile.txt","150_210.png","mode 0","RLE")
+
+#question11
+def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
+    f=open(pathTextFile,"w")
+    f.write("SJPG\n")
+    image = load(pathImageFile)
+    hauteur=str(image.shape[0])
+    largeur=str(image.shape[1])
+    f.write(hauteur+" "+largeur+"\n")
+    f.write(mode+"\n")
+    f.write(encoding+"\n")
+    imageY=Y(image)
+    imageCb=Cb(image)
+    imageCr=Cr(image)
+    listeblockY=get_block(imageY)
+    TRlisteblockY=transform_frequence(listeblockY)
+    for i in TRlisteblockY:
+        f.write(str(i)+" ")
+    
+    f.close()
+# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
+
+
+#Question 12 
+
+def write_im_header_block(pathTextFile, pathImageFile, mode, encoding):
+    f = open(pathTextFile, "w")
+    f.write("SJPG\n")
+    image = load(pathImageFile)
+    hauteur = str(image.shape[0])
+    largeur = str(image.shape[1])
+    f.write(hauteur + " " + largeur + "\n")
+    f.write(mode + "\n")
+    f.write(encoding + "\n")
+    imageY = Y(image)
+    imageCb = Cb(image)
+    imageCr = Cr(image)
+    listeblockY = get_block(imageY)
+    TRlisteblockY = transform_frequence(listeblockY)
+    
+    # Appliquer le codage RLE si l'option "RLE" est spécifiée
+    if encoding == "RLE":
+        TRlisteblockY = run_length_encoding(TRlisteblockY)
+    
+    for i in TRlisteblockY:
+        f.write(str(i) + " ")
+    
+    f.close()
+# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
