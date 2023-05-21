@@ -247,9 +247,9 @@ matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0
 def compress(image,mode,seuil):
     imagemat = load(image)
     imageYCbCr=YCbCr(imagemat)
-    listblockY = get_block(imageYCbCr[::0])
-    listblockCb=get_block(imageYCbCr[::1])
-    listblockCr=get_block(imageYCbCr[::2])
+    listblockY = get_block(imageYCbCr[:,:,0])
+    listblockCb=get_block(imageYCbCr[:,:,1])
+    listblockCr=get_block(imageYCbCr[:,:,2])
     if mode==0:
         return (listblockY, listblockCb, listblockCr)
     if mode==1 :
@@ -261,8 +261,15 @@ def compress(image,mode,seuil):
         listblockCr=filter_coeff(listblockCr,seuil)
         return (listblockY, listblockCb, listblockCr)    
 
+
+
 imagecompress=compress("test.png",0,10)
 print(imagecompress)
+imagecompress=compress("test.png",1,10)
+print(imagecompress)
+imagecompress=compress("test.png",2,10)
+print(imagecompress)
+
 
 #question 10
 
