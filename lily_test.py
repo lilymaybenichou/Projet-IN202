@@ -101,35 +101,26 @@ def add_padding(image):
         
    
           
-    pad_size = (pad_sizeL, pad_sizel)  # Si un seul entier est donné, le même padding sera ajouté dans les deux dimensions
+    pad_size = (pad_sizeL, pad_sizel)  
 
     padded_image = np.pad(image, ((0, pad_size[1]), (0, pad_size[0]), (0, 0)), mode='constant')
-
     return padded_image,pad_size
 
-
 def remove_padding(padded_image, pad_size):
-    if isinstance(pad_size, int):
-        pad_size = (pad_size, pad_size)  # Si un seul entier est donné, le même padding sera éliminé dans les deux dimensions
-
-    image = padded_image[pad_size[0]:-pad_size[0], pad_size[1]:-pad_size[1], :]
-
+    image = padded_image[0:-pad_size[1], 0:-pad_size[0], :]
     return image
-
 # Charger l'image
 image = load("150_210.png")
 
-#print(image.shape)
 
 # Ajouter le padding
-#padded_image = add_padding(image)
-#Image.fromarray(padded_image,'RGB').show()
-
-#padded_yCbCr = YCbCr(padded_image)
-#restored_yCbCr = remove_padding(padded_yCbCr)
-
-#padded_RGB = RGB2(padded_image)
-#restored_RGB = remove_padding(padded_RGB)
+padded_image = add_padding(image)[0]
+padd_size=add_padding(image)[1]
+Image.fromarray(padded_image,'RGB').show()
+#Supprime le padding
+unpadded_image=remove_padding(padded_image,padd_size)
+Image.fromarray(unpadded_image,'RGB').show()
+print(unpadded_image.shape[0],unpadded_image.shape[1])
 
 #question4
 def matrice_sousechantillon2(mat):
@@ -339,8 +330,9 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
     f=open(pathTextFile,"w")
     f.write("SJPG\n")
     image = load(pathImageFile)
-    
+
     padded_image = add_padding(image)[0]
+    padd_size=add_padding(image)[1]
     hauteur=str(padded_image.shape[0])
     largeur=str(padded_image.shape[1])
     f.write(hauteur+" "+largeur+"\n")
@@ -409,6 +401,11 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
 
 
 
-write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
-write_im_header_block("txtFile1.txt","test.png","mode 1","RLE")
-write_im_header_block("txtFile2.txt","test.png","mode 2","RLE")
+# write_im_header_block("txtFile.txt","150_210.png","mode 0","RLE")
+# write_im_header_block("txtFile1.txt","150_210.png","mode 1","RLE")
+# write_im_header_block("txtFile2.txt","150_210.png","mode 2","RLE")
+
+line="1322 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -11 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+
+# def RLE(ligne):
+#     for 
