@@ -540,3 +540,19 @@ write_im_header_block_encoding("txtFileRLE.txt","150_210.png","mode 0","RLE")
 write_im_header_block_encoding("txtFile1RLE.txt","150_210.png","mode 1","RLE")
 write_im_header_block_encoding("txtFile2RLEtxt","150_210.png","mode 2","RLE")
 
+
+
+
+#question 14 
+#def f(fhichierprof):
+    #li 4 prem ligne SJPG
+# 210 300
+# mode 0
+# RLE
+# verifier qu'il ya buien sjgp 
+#recup taille largeur
+#recup mode de compression +rle ou non
+#si sgp reconstituer les 3 liste de blocs(1ligne=1block)
+#
+#
+#
