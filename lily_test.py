@@ -80,21 +80,26 @@ def RGB2(mat):
 #question 3
 def add_padding(image):
     x=image.shape[1]
+    a=image.shape[0]
+    pad_sizeL=0
+    pad_sizel = 0
+    if (x%8==0)and (a%8==0):
+        return image , (pad_sizeL,pad_sizel)
+
     if image.shape[1]%8!=0:
         y=x
         while x%8!=0:
             x+=1
         pad_sizeL=x-y   
-        print(pad_sizeL)
-    a=image.shape[0]
+       
+   
     if a%8!=0: 
         b=a
         while a%8!=0:
             a+=1
         pad_sizel=a-b 
-        print(pad_sizel)
-    else:
-        return image , (0,0)
+        
+   
           
     pad_size = (pad_sizeL, pad_sizel)  # Si un seul entier est donné, le même padding sera ajouté dans les deux dimensions
 
@@ -128,10 +133,7 @@ image = load("150_210.png")
 
 #question4
 def matrice_sousechantillon2(mat):
-   
     matfinal=[]
-    print(mat.shape[0])
-    print(mat.shape[1])
     for i in range(0,mat.shape[0]): 
         listemoy=[]
         for j in range(0,mat.shape[1],2):
@@ -148,9 +150,10 @@ def matrice_2d(matrice):
     matrice_double = np.repeat(matrice, 2, axis=1)
     return matrice_double
 
-mat=np.array([[1,2,3,6],[3,5,10,0]])
-print(matrice_sousechantillon2(mat))
-print(matrice_2d(matrice_sousechantillon2(mat)))
+# mat=np.array([[1,2,3,6],[3,5,10,0]])
+# print(matrice_sousechantillon2(mat))
+# print(matrice_2d(matrice_sousechantillon2(mat)))
+
 # Charger l'image
 #image = Image.open("test.png")
 #image_array = np.array(image)
@@ -257,8 +260,8 @@ def compress_mode2(image, seuil):
     padded_image = add_padding(yCbCr_image)
     blocks = get_block(padded_image)
     blocks[np.abs(blocks) < seuil] = 0
-    subsampled_Cb = matrice_sousechantillon(Cb(padded_image))
-    subsampled_Cr = matrice_sousechantillon(Cr(padded_image))
+    subsampled_Cb = matrice_sousechantillon2(Cb(padded_image))
+    subsampled_Cr = matrice_sousechantillon2(Cr(padded_image))
 
     return blocks, subsampled_Cb, subsampled_Cr
 
@@ -297,10 +300,10 @@ def compress(image,mode,seuil):
     if mode==2:
         listblockY=filter_coeff(listblockY,seuil)
         
-        listblockCb_ech=matrice_sousechantillon(imageYCbCr[:,:,1])
+        listblockCb_ech=matrice_sousechantillon2(imageYCbCr[:,:,1])
         listblockCb=filter_coeff(listblockCb_ech,seuil)
 
-        listblockCr_ech=matrice_sousechantillon(imageYCbCr[:,:,2])
+        listblockCr_ech=matrice_sousechantillon2(imageYCbCr[:,:,2])
         listblockCr=filter_coeff(listblockCr_ech,seuil)
         return (listblockY, listblockCb, listblockCr)    
 
@@ -364,13 +367,13 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
         listeblockY=transform_frequence(listeblockY)
         listeblockY=filter_coeff(listeblockY,seuil)
 
-        imageCb=matrice_sousechantillon(imageCb)
+        imageCb=matrice_sousechantillon2(imageCb)
         imageCr = matrice_2d(imageCb)
         listeblockCb=get_block(imageCb)
         listeblockCb=transform_frequence(listeblockCb)
         listeblockCb=filter_coeff(listeblockCb,seuil)
        
-        imageCr=matrice_sousechantillon(imageCr)
+        imageCr=matrice_sousechantillon2(imageCr)
         imageCr = matrice_2d(imageCr)
         listeblockCr=get_block(imageCr)
         listeblockCr=transform_frequence(listeblockCr)
@@ -405,6 +408,6 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
 
 
 
-# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
-# write_im_header_block("txtFile1.txt","test.png","mode 1","RLE")
-# write_im_header_block("txtFile2.txt","test.png","mode 2","RLE")
+write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
+write_im_header_block("txtFile1.txt","test.png","mode 1","RLE")
+write_im_header_block("txtFile2.txt","test.png","mode 2","RLE")
