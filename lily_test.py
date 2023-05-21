@@ -63,17 +63,15 @@ def RGB2(mat):
             MatRGB[i, j] = (np.uint8(np.clip(R, 0.0, 255.0)), np.uint8(np.clip(G, 0.0, 255.0)), np.uint8(np.clip(B, 0.0, 255.0)))
     return MatRGB
 
-test = load("test.png")
 
-# Conversion de l'image en YCbCr
 #question1
+#test = load("test.png")
+#Conversion de l'image en YCbCr
 #test_yCbCr = YCbCr(test)
 
 #question2
 #test_RGB = RGB2(test_yCbCr)
-
-
-test = load("test.png")
+#test = load("test.png")
 #Image.fromarray(test,'RGB').show()
 #Image.fromarray(test_yCbCr,'YCbCr').show()
 #Image.fromarray(test_RGB,'RGB').show()
@@ -102,7 +100,7 @@ def add_padding(image):
 
     padded_image = np.pad(image, ((0, pad_size[1]), (0, pad_size[0]), (0, 0)), mode='constant')
 
-    return padded_image
+    return padded_image,pad_size
 
 
 def remove_padding(padded_image, pad_size):
@@ -168,8 +166,6 @@ def get_block(mat):
     return Liste_final
 
 
-# 
-
 
 #question7matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
 #                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
@@ -221,8 +217,35 @@ def filter_coeff(liste_de_bloc,seuil):
         b[(b>0) & (b < seuil)] = 0 
         b[(b<0) & (b > -seuil)] = 0 
         liste_final.append(b)
-    liste_final=np.array(liste_final)
+    
     return liste_final
+
+def compress_mode0(image):
+    yCbCr_image = YCbCr(image)
+    padded_image = add_padding(yCbCr_image)
+    blocks = get_block(padded_image)
+
+    return blocks
+
+
+def compress_mode1(image, seuil):
+    yCbCr_image = YCbCr(image)
+    padded_image = add_padding(yCbCr_image)
+    blocks = get_block(padded_image)
+    blocks[np.abs(blocks) < seuil] = 0
+
+    return blocks
+
+
+def compress_mode2(image, seuil):
+    yCbCr_image = YCbCr(image)
+    padded_image = add_padding(yCbCr_image)
+    blocks = get_block(padded_image)
+    blocks[np.abs(blocks) < seuil] = 0
+    subsampled_Cb = matrice_sousechantillon(Cb(padded_image))
+    subsampled_Cr = matrice_sousechantillon(Cr(padded_image))
+
+    return blocks, subsampled_Cb, subsampled_Cr
 
 matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
@@ -255,20 +278,25 @@ def compress(image,mode,seuil):
     if mode==1 :
         listblockY=filter_coeff(listblockY,seuil)
         return (listblockY, listblockCb, listblockCr)
+    
     if mode==2:
         listblockY=filter_coeff(listblockY,seuil)
-        listblockCb=filter_coeff(listblockCb,seuil)
-        listblockCr=filter_coeff(listblockCr,seuil)
+        
+        listblockCb_ech=matrice_sousechantillon(imageYCbCr[:,:,1])
+        listblockCb=filter_coeff(listblockCb_ech,seuil)
+
+        listblockCr_ech=matrice_sousechantillon(imageYCbCr[:,:,2])
+        listblockCr=filter_coeff(listblockCr_ech,seuil)
         return (listblockY, listblockCb, listblockCr)    
 
 
 
-imagecompress=compress("test.png",0,10)
-print(imagecompress)
-imagecompress=compress("test.png",1,10)
-print(imagecompress)
-imagecompress=compress("test.png",2,10)
-print(imagecompress)
+# imagecompress=compress("test.png",0,10)
+# print(imagecompress)
+# imagecompress=compress("test.png",1,10)
+# print(imagecompress)
+# imagecompress=compress("test.png",2,10)
+# print(imagecompress)
 
 
 #question 10
@@ -292,18 +320,49 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
     f=open(pathTextFile,"w")
     f.write("SJPG\n")
     image = load(pathImageFile)
-    hauteur=str(image.shape[0])
-    largeur=str(image.shape[1])
+    padded_image = add_padding(image)[0]
+    hauteur=str(padded_image.shape[0])
+    largeur=str(padded_image.shape[1])
     f.write(hauteur+" "+largeur+"\n")
     f.write(mode+"\n")
     f.write(encoding+"\n")
-    imageY=Y(image)
-    imageCb=Cb(image)
-    imageCr=Cr(image)
+    imageY=Y(padded_image)
+    imageCb=Cb(padded_image)
+    imageCr=Cr(padded_image)
     listeblockY=get_block(imageY)
-    TRlisteblockY=transform_frequence(listeblockY)
-    for i in TRlisteblockY:
-        f.write(str(i)+" ")
-    
+    listeblockCb=get_block(imageCb)
+    listeblockCr=get_block(imageCr)
+    #TRlisteblockY=transform_frequence(listeblockY)
+    if mode=="mode 0":
+        listeblockYTR=transform_frequence(listeblockY)
+        listeblockCbTR=transform_frequence(listeblockCb)
+        listeblockCrTR=transform_frequence(listeblockCr)
+
+
+
+    for b in listeblockY:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        f.write( line +"\n")
+    for b in listeblockCb:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        f.write( line +"\n")
+    for b in listeblockCr:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        f.write( line +"\n")
     f.close()
-# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
+write_im_header_block("txtFile.txt","150_210.png", 0,"RLE")
