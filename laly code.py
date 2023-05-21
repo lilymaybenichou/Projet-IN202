@@ -331,6 +331,7 @@ def write_im_header_block(pathTextFile, pathImageFile, mode, encoding):
             f.write(line + "\n")
 
     f.close()
+# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
 
 # Charger l'image
 image = load("test.png")
@@ -376,31 +377,3 @@ compressed_mode1 = compress_mode1(image, seuil)
 # Mode 2 : seuil appliqué aux coefficients + sous-échantillonnage de la chrominance
 seuil = 8
 compressed_mode2, subsampled_Cb, subsampled_Cr = compress_mode2(image, seuil)
-
-
-#Question 12 
-
-def write_im_header_block(pathTextFile, pathImageFile, mode, encoding):
-    f = open(pathTextFile, "w")
-    f.write("SJPG\n")
-    image = load(pathImageFile)
-    hauteur = str(image.shape[0])
-    largeur = str(image.shape[1])
-    f.write(hauteur + " " + largeur + "\n")
-    f.write(mode + "\n")
-    f.write(encoding + "\n")
-    imageY = Y(image)
-    imageCb = Cb(image)
-    imageCr = Cr(image)
-    listeblockY = get_block(imageY)
-    TRlisteblockY = transform_frequence(listeblockY)
-    
-    # Appliquer le codage RLE si l'option "RLE" est spécifiée
-    if encoding == "RLE":
-        TRlisteblockY = run_length_encoding(TRlisteblockY)
-    
-    for i in TRlisteblockY:
-        f.write(str(i) + " ")
-    
-    f.close()
-# write_im_header_block("txtFile.txt","test.png","mode 0","RLE")
