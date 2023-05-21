@@ -1,0 +1,4 @@
+SJPG
+472 624
+mode 0
+RLE
