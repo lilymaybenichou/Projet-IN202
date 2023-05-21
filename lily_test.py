@@ -42,7 +42,7 @@ def Cr(mat):
             MatCr[i, j] = 0.5 * mat[i, j, 0] - 0.4187 * mat[i, j, 1] - 0.0813 * mat[i, j, 2] + 128
     return MatCr
 
-def YCbCr(mat):
+def YCbCr__(mat):
     MatYCbCr = np.empty(mat.shape)
     for i in range(mat.shape[0]):
         for j in range(mat.shape[1]):
@@ -53,6 +53,15 @@ def YCbCr(mat):
             
     return MatYCbCr
 
+def YCbCr(mat):
+    MatYCbCr = np.empty((mat.shape[0], mat.shape[1], 3))
+    for i in range(mat.shape[0]):
+        for j in range(mat.shape[1]):
+            R = 0.299 * mat[i, j, 0] + 0.587 * mat[i, j, 1] + 0.114 * mat[i, j, 2]
+            Cb = -0.1687 * mat[i, j, 0] - 0.3313 * mat[i, j, 1] + 0.5 * mat[i, j, 2] + 128
+            Cr = 0.5 * mat[i, j, 0] - 0.4187 * mat[i, j, 1] - 0.0813 * mat[i, j, 2] + 128
+            MatYCbCr[i, j] = [R, Cb, Cr]
+    return MatYCbCr
 def RGB2(mat):
     MatRGB = np.empty((mat.shape[0], mat.shape[1], 3))
     for i in range(mat.shape[0]):
@@ -65,17 +74,15 @@ def RGB2(mat):
 
 
 #question1
-#test = load("test.png")
-#Conversion de l'image en YCbCr
-#test_yCbCr = YCbCr(test)
+# test = load("test.png")
+# # Conversion de l'image en YCbCr et RGB
+# test_yCbCr = YCbCr(test)
+# test_RGB = RGB2(test_yCbCr)
 
-#question2
-#test_RGB = RGB2(test_yCbCr)
-#test = load("test.png")
-#Image.fromarray(test,'RGB').show()
-#Image.fromarray(test_yCbCr,'YCbCr').show()
-#Image.fromarray(test_RGB,'RGB').show()
-
+# test = load("test.png")
+# Image.fromarray(test,'RGB').show()
+# Image.fromarray(test_yCbCr,'YCbCr').show()
+# Image.fromarray(test_RGB,'RGB').show()
 
 #question 3
 def add_padding(image):
@@ -113,14 +120,14 @@ def remove_padding(padded_image, pad_size):
 image = load("150_210.png")
 
 
-# Ajouter le padding
-padded_image = add_padding(image)[0]
-padd_size=add_padding(image)[1]
-Image.fromarray(padded_image,'RGB').show()
-#Supprime le padding
-unpadded_image=remove_padding(padded_image,padd_size)
-Image.fromarray(unpadded_image,'RGB').show()
-print(unpadded_image.shape[0],unpadded_image.shape[1])
+# # Ajouter le padding
+# padded_image = add_padding(image)[0]
+# padd_size=add_padding(image)[1]
+# Image.fromarray(padded_image,'RGB').show()
+# #Supprime le padding
+# unpadded_image=remove_padding(padded_image,padd_size)
+# Image.fromarray(unpadded_image,'RGB').show()
+# print(unpadded_image.shape[0],unpadded_image.shape[1])
 
 #question4
 def matrice_sousechantillon2(mat):
@@ -401,11 +408,135 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
 
 
 
-# write_im_header_block("txtFile.txt","150_210.png","mode 0","RLE")
-# write_im_header_block("txtFile1.txt","150_210.png","mode 1","RLE")
-# write_im_header_block("txtFile2.txt","150_210.png","mode 2","RLE")
+# write_im_header_block("txtFile.txt","150_210.png","mode 0","NORLE")
+# write_im_header_block("txtFile1.txt","150_210.png","mode 1","NORLE")
+# write_im_header_block("txtFile2.txt","150_210.png","mode 2","NORLE")
 
-line="1322 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -11 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
 
-# def RLE(ligne):
-#     for 
+
+#Question 12 
+def run_length_encoding(line):
+    x = np.array(line, dtype=str)
+    line_array = np.char.split(x).tolist()
+   
+
+    current_value = line_array[0]
+
+    encoded_line_array=[]
+    count = 0
+
+    for i in range(1, len(line_array)):
+        if (line_array[i] == current_value ) and (current_value =="0") :
+            count += 1
+        else:
+            if (current_value!="0"):
+                encoded_line_array.append((current_value))
+            if(count >0) :
+                nbzero = "#"+str(count+1)
+                encoded_line_array.append(nbzero)
+            current_value = line_array[i]
+            count = 0
+
+    if(current_value=="0"):
+         if(count >0) :
+                nbzero = "#"+str(count+1)
+                encoded_line_array.append(nbzero)
+    return  ' '.join(encoded_line_array)
+
+
+# line="1322 0 0 0 -11 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+# print(line)
+# print(run_length_encoding(line))
+
+
+
+#question12
+def write_im_header_block_encoding(pathTextFile,pathImageFile,mode,encoding):
+    seuil=10
+    f=open(pathTextFile,"w")
+    f.write("SJPG\n")
+    image = load(pathImageFile)
+
+    padded_image = add_padding(image)[0]
+    padd_size=add_padding(image)[1]
+    hauteur=str(padded_image.shape[0])
+    largeur=str(padded_image.shape[1])
+    f.write(hauteur+" "+largeur+"\n")
+    f.write(mode+"\n")
+    f.write(encoding+"\n")
+    imageY=Y(padded_image)
+    imageCb=Cb(padded_image)
+    imageCr=Cr(padded_image)
+    listeblockY=get_block(imageY)
+    listeblockCb=get_block(imageCb)
+    listeblockCr=get_block(imageCr)
+    #TRlisteblockY=transform_frequence(listeblockY)
+    if mode=="mode 0":
+        listeblockY=transform_frequence(listeblockY)
+        listeblockCb=transform_frequence(listeblockCb)
+        listeblockCr=transform_frequence(listeblockCr)
+    if mode=="mode 1":
+        listeblockY=transform_frequence(listeblockY)
+        listeblockY=filter_coeff(listeblockY,seuil)
+        listeblockCb=transform_frequence(listeblockCb)
+        listeblockCb=filter_coeff(listeblockCb,seuil)
+        listeblockCr=transform_frequence(listeblockCr)
+        listeblockCr=filter_coeff(listeblockCr,seuil)
+    if mode=="mode 2":
+        listeblockY=transform_frequence(listeblockY)
+        listeblockY=filter_coeff(listeblockY,seuil)
+
+        imageCb=matrice_sousechantillon2(imageCb)
+        imageCr = matrice_2d(imageCb)
+        listeblockCb=get_block(imageCb)
+        listeblockCb=transform_frequence(listeblockCb)
+        listeblockCb=filter_coeff(listeblockCb,seuil)
+       
+        imageCr=matrice_sousechantillon2(imageCr)
+        imageCr = matrice_2d(imageCr)
+        listeblockCr=get_block(imageCr)
+        listeblockCr=transform_frequence(listeblockCr)
+        listeblockCr=filter_coeff(listeblockCr,seuil)
+        
+
+    for b in listeblockY:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        
+
+        if (encoding=="RLE"):
+            line = run_length_encoding(line)
+        f.write( line +"\n")
+
+    for b in listeblockCb:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        if (encoding=="RLE"):
+            line = run_length_encoding(line)
+        f.write( line +"\n")
+    for b in listeblockCr:
+        line=""
+        for i in range(0,8):
+            for j in range(0,8):
+                line = line + str(int(b[i,j]))
+                if(i!=8 and j!=8):
+                    line = line + " "
+        if (encoding=="RLE"):
+            line = run_length_encoding(line)
+        f.write( line +"\n")
+    f.close()
+
+
+
+write_im_header_block_encoding("txtFileRLE.txt","150_210.png","mode 0","RLE")
+write_im_header_block_encoding("txtFile1RLE.txt","150_210.png","mode 1","RLE")
+write_im_header_block_encoding("txtFile2RLEtxt","150_210.png","mode 2","RLE")
+
