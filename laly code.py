@@ -119,15 +119,14 @@ matrice = np.array([[1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0
 print(get_block(matrice))
 
 #question7
-#question7matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
-#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
-#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
-#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
-#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
-#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
-#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
-#                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0]]
-#                     )
+question7matrice = np.array([[1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0],
+                     [1,2,5,6,0,0,0,0,1,2,5,6,0,0,0,0],[3,4,7,8,0,0,0,0,3,4,7,8,0,0,0,0]])
 
 def transform_frequence(liste_de_bloc):
     liste_final=[]
@@ -203,12 +202,12 @@ def compress(image,mode,seuil):
         listblockCr=filter_coeff(listblockCr_ech,seuil)
         return (listblockY, listblockCb, listblockCr)    
 
-# imagecompress=compress("test.png",0,10)
-# print(imagecompress)
-# imagecompress=compress("test.png",1,10)
-# print(imagecompress)
-# imagecompress=compress("test.png",2,10)
-# print(imagecompress)
+imagecompress=compress("test.png",0,10)
+print(imagecompress)
+imagecompress=compress("test.png",1,10)
+print(imagecompress)
+imagecompress=compress("test.png",2,10)
+print(imagecompress)
 
 #Question 10
 def write_im_header(pathTextFile,pathImageFile,mode,encoding):
@@ -222,7 +221,7 @@ def write_im_header(pathTextFile,pathImageFile,mode,encoding):
     f.write(encoding+"\n")
     f.close()
 
-# write_im_header("txtFile.txt","150_210.png","mode 0","RLE")
+write_im_header("txtFile.txt","150_210.png","mode 0","RLE")
 
 #Question 11
 def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
@@ -277,6 +276,23 @@ def write_im_header_block(pathTextFile,pathImageFile,mode,encoding):
 write_im_header_block("txtFile.txt","150_210.png", 0,"RLE")
 
 #Question 12 
+def run_length_encoding(block):
+    encoded_block = []
+    current_value = block[0]
+    count = 1
+
+    for i in range(1, len(block)):
+        if block[i] == current_value:
+            count += 1
+        else:
+            encoded_block.append((current_value, count))
+            current_value = block[i]
+            count = 1
+
+    encoded_block.append((current_value, count))
+
+    return encoded_block
+
 def write_im_header_block(pathTextFile, pathImageFile, mode, encoding):
     f = open(pathTextFile, "w")
     f.write("SJPG\n")
