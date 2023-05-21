@@ -551,15 +551,15 @@ def decompress_mode1(blocks, seuil):
     return restored_image
 
 # Charger et compresser l’image
-image = load("test.png")
-compressed_blocks = compress_mode1(image, 10)
+#image = load("test.png")
+#compressed_blocks = compress_mode1(image, 10)
 
 # Décompresser et restaurer l’image
-restored_image = decompress_mode1(compressed_blocks, 10)
+#restored_image = decompress_mode1(compressed_blocks, 10)
 
 # Afficher l’image restaurée
-restored_image = Image.fromarray(restored_image.astype(np.uint8))
-restored_image.show()
+#restored_image = Image.fromarray(restored_image.astype(np.uint8))
+#restored_image.show()
 
 
 #question 14 
@@ -578,7 +578,10 @@ def decompression(fichieSJPG):
         largeur=l[2]
         mode_compression=l[4]
         rle=l[5]
-
+        for i in range(0,largeur):
+            for j in range(0,hauteur):
+                detransform_frequence("matrice du blockY")# utiliser lahauteur et la largeur pour  retrouver la taille dublock et le repasser en matrice
+                
     texte.close()
     return l[0]
 
