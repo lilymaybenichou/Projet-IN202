@@ -567,6 +567,7 @@ def decompression(fichieSJPG):
     texte=open(fichieSJPG,"r")
     lignes=texte.readline()
     l=""
+    blockY=""
     n=0
     while n!=4:# recuperation des information de l'image
         l+=lignes
@@ -578,13 +579,17 @@ def decompression(fichieSJPG):
         largeur=l[2]
         mode_compression=l[4]
         rle=l[5]
-        for i in range(0,largeur):
-            for j in range(0,hauteur):
-                detransform_frequence("matrice du blockY")# utiliser lahauteur et la largeur pour  retrouver la taille dublock et le repasser en matrice
-                
-    texte.close()
-    return l[0]
+        #detransform_frequence("matrice du blockY")#utiliser lahauteur et la largeur pour  retrouver la taille dublock et le repasser en matrice
+        
 
-print(decompression("txtFile1.txt"))
+        while n!=int(hauteur)+4:#recupere le blockY
+            blockY+=lignes
+            n+=1
+            lignes=texte.readline()
+        blockY=list(blockY.split())
+    texte.close()
+    return blockY
+
+print(decompression("txtFile1RLE.txt"))
 
 #si sgp reconstituer les 3 liste de blocs(1ligne=1block)
